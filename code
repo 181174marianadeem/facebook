@@ -1,0 +1,1445 @@
+#pragma warning(disable:4996)
+#include<fstream>
+#include<string.h>
+#include<iostream>
+using namespace std;
+
+class Object
+{
+	char* ID;
+public:
+	Object()
+	{
+		ID = nullptr;
+	}
+	virtual ~Object()
+	{
+		delete[] ID;
+	}
+	Object(char* str)
+	{
+		ID = new char[strlen(str) + 1];
+		strcpy(ID, str);
+	}
+	void SetID(char* str)
+	{
+		ID = new char[strlen(str) + 1];
+		strcpy(ID, str);
+	}
+	void SetID(const char* str)
+	{
+		ID = new char[strlen(str) + 1];
+		strcpy(ID, str);
+	}
+	char* GetID()
+	{
+		if (ID == nullptr)
+			return nullptr;
+		else
+			return ID;
+	}
+	void PrintID()
+	{
+		cout << ID;
+	}
+	virtual char* GetUserName()
+	{
+		return 0;
+	}
+};
+class Date {
+private:
+	int Day;
+	int Month;
+	int Year;
+public:
+	Date()
+	{
+		Day = 0;
+		Month = 0;
+		Year = 0;
+	}
+	~Date()
+	{
+
+	}
+	Date(int Day, int Month, int Year)
+	{
+		this->Day = Day;
+		this->Month = Month;
+		this->Year = Year;
+	}
+	void SetDate(int Day, int Month, int Year)
+	{
+		this->Day = Day;
+		this->Month = Month;
+		this->Year = Year;
+	}
+	void SetDate(Date d)
+	{
+		this->Day = d.Day;
+		this->Month =d. Month;
+		this->Year = d.Year;
+	}
+	void PrintDate()
+	{
+		cout << Day << "/" << Month << "/" << Year << endl;
+	}
+	bool operator==(const Date& Date)
+	{
+		if (Day == Date.Day && Month == Date.Month && Year == Date.Year)
+			return true;
+		else
+			return false;
+	}
+	Date GetPreviousDate()
+	{
+		if (Day != 1&&Month!=1)
+		{
+			Date result(Day - 1, Month, Year);
+			return result;
+		}
+		if (Day == 1&&Month==1)
+		{
+			Date result(1, 1, Year-1);
+			return result;
+		}
+		if (Day == 1 && Month != 1)
+		{
+			Date result(1, Month-1, Year);
+			return result;
+		}
+		if (Day != 1 && Month == 1)
+		{
+			Date result(Day-1, Month, Year);
+			return result;
+		}
+		else
+		{
+			Date result(Day, Month, Year-1);
+			return result;
+		}
+	}
+};
+class Comment :public Object
+{
+	Object* PostedBy;
+	char* PostID;
+	char* Text;
+public:
+	Comment()
+	{
+		PostedBy = nullptr;
+		PostID = nullptr;
+		Text = nullptr;
+	}
+	~Comment()
+	{
+		if (PostID)
+		{
+			delete[] PostID;
+		}
+		if (Text)
+		{
+			delete[]Text;
+		}
+	}
+	void SetPostedBy(Object* obj)
+	{
+		if (obj)
+		{
+			PostedBy = obj;
+		}
+	}
+	void SetPostID(char*str)
+	{
+		PostID = new char[strlen(str) + 1];
+		strcpy(PostID,str);
+	}
+	void SetPostID(const char* str)
+	{
+		PostID = new char[strlen(str) + 1];
+		strcpy(PostID, str);
+	}
+	char* GetText()
+	{
+		return Text;
+	}
+	char* GetPostID()
+	{
+		return PostID;
+	}
+	void SetText(char* str)
+	{
+		Text = new char[strlen(str) + 1];
+		strcpy(Text, str);
+	}
+	void SetText(const char* str)
+	{
+		Text = new char[strlen(str) + 1];
+		strcpy(Text, str);
+	}
+	void PrintComment()
+	{
+		if(PostedBy)
+		cout << PostedBy->GetUserName() << "  wrote  " << "  ' " << Text << "'" << endl;
+	}
+	void operator=(const Comment& aComment)
+	{
+		if (aComment.PostID)
+		{
+			PostID = aComment.PostID;
+		}
+		if (aComment.PostedBy)
+		{
+			PostedBy = aComment.PostedBy;
+		}
+		if (aComment.Text)
+		{
+			Text = aComment.Text;
+		}
+	}
+};
+class Activity
+{
+	int Type;//A Type and a value against its Type
+	char* Value;
+public:
+	Activity()
+	{
+		Type = 0;
+		Value = nullptr;
+	}
+	~Activity()
+	{
+		if (Value)
+		{
+			delete[]Value;
+		}
+	}
+	Activity(int Type, char* Value)
+	{
+		this->Type = Type;
+		this->Value = new char[strlen(Value) + 1];
+		strcpy(this->Value, Value);
+	}
+	Activity(const Activity& other)
+	{
+		Type = other.Type;
+		this->Value = new char[strlen(other.Value) + 1];
+		strcpy(this->Value, other.Value);
+	}
+	void PrintActivity()
+	{
+		if (Type == 1)
+		{
+			cout << "is feeling";
+		}
+		if (Type == 2)
+		{
+			cout << "is Thinking about";
+		}
+		if (Type == 3)
+		{
+			cout << "is Making";
+		}
+		if (Type == 4)
+		{
+			cout << " is Celebrating";
+		}
+		cout << Value;
+	}
+	void SetType(int Type)
+	{
+		Type = Type;
+	}
+	void SetValue(char* value)
+	{
+		Value = new char[strlen(value) + 1];
+		strcpy(Value, value);
+	}
+};
+class User;
+class Helper
+{
+public:
+	static char* GetStrFromBuffer(char buffer[])//obtaining char * from buffer
+	{
+		char* str = new char[strlen(buffer) + 1];
+		strcpy(str, buffer);
+		return str;
+	}
+	static int myatoi(char* str)//converting char* into integer
+	{
+		int integer = (str[1] - 48);
+		if (str[2] != 0)
+		{
+			integer *= 10;
+			integer += str[2] - 48;
+		}
+		return integer;
+	}
+};
+class Post :public Object
+{
+	Date PostedDate;
+	char* Text;
+	//Object* PostedBy;
+	Object** LikedBy;
+	Object* SharedBy;
+	Activity* aActivity;
+	Comment** Comments;
+	//int NumberOfLikes;
+public:
+	Post() :PostedDate()
+	{
+		Text = nullptr;
+		//PostedBy = nullptr;
+		LikedBy = nullptr;
+		SharedBy = nullptr;
+		aActivity = nullptr;
+		Comments = nullptr;
+		//NumberOfLikes = 0;
+	}
+	~Post()
+	{
+		if (Text)
+		{
+			delete[]Text;
+		}
+		if (aActivity)
+		{
+			delete aActivity;
+		}
+		if (Comments)
+		{
+			for (int i = 0; i < 10; i++)
+			{
+				delete Comments[i];
+			}
+			delete[]Comments;
+		}
+
+	}
+	char* GetUserName()
+	{
+		return GetID();
+	}
+	void SetPostedDate(int Day, int Month, int Year)
+	{
+		PostedDate.SetDate(Day, Month, Year);
+	}
+	void SetPostedDate(Date d)
+	{
+		PostedDate.SetDate(d);
+	}
+	Date GetPostedDate()
+	{
+		return PostedDate;
+	}
+	Object* GetSharedBy()
+	{
+		return SharedBy;
+	}
+	void AllocateComments()
+	{
+		Comments = new Comment * [10];
+		for (int i = 0; i < 10; i++)
+		{
+			Comments[i] = nullptr;
+		}
+	}
+	void SetTextOfPost(char* str)
+	{
+		Text = new char[strlen(str) + 1];
+		strcpy(Text, str);
+	}
+	char* getTextOfPost()
+	{
+		return Text;
+	}
+	void SetActivity(int Type, char* Value)
+	{
+		aActivity = new Activity(Type, Value);
+	}
+	void SetActivity(Activity aActivity1)//khgyighgkhg
+	{
+		aActivity = new Activity(aActivity1);
+	}
+	Activity GetActivity()
+	{
+		return *aActivity;
+	}
+	void SetSharedBy(Object* obj)
+	{
+		SharedBy = obj;
+	}
+	char* GetObjectName()
+	{
+		return SharedBy->GetID();
+	}
+	void AllocateLikes()
+	{
+		LikedBy = new Object * [10];
+		for (int i = 0; i < 10; i++)
+		{
+			LikedBy[i] = nullptr;
+		}
+	}
+	void LikePost(Object* obj)
+	{
+		if (LikedBy != nullptr)
+		{
+			int i = 0;
+			while (LikedBy[i] != nullptr && i < 10)
+			{
+				i++;
+			}
+			LikedBy[i] = obj;
+		}
+		else
+		{
+			AllocateLikes();
+			LikedBy[0] = obj;
+		}
+	}
+	void PrintPost()
+	{
+		if (SharedBy != 0)
+		{
+			cout << SharedBy->GetUserName() << " ";
+			if (aActivity)
+			{
+				aActivity->PrintActivity();
+			}
+			cout << endl;
+			cout << Text;
+			cout << endl;
+			if (Comments)
+			{
+				int i = 0;
+				while (Comments[i] != 0)
+				{
+					Comments[i]->PrintComment();
+					i++;
+				}
+			}
+		}
+	}
+	void AddComment(Comment* aComment)
+	{
+		if (Comments)
+		{
+			int i = 0;
+			while (Comments[i] != nullptr && i < 10)
+			{
+				i++;
+			}
+			Comments[i] = aComment;
+		}
+		else
+		{
+			AllocateComments();
+			Comments[0] = aComment;
+		}
+	}
+	void ViewLikedBy()
+	{
+		for (int i = 0; i < 10; i++)
+		{
+			if (LikedBy[i])
+			{
+				cout << LikedBy[i]->GetUserName()<<endl;
+			}
+		}
+	}
+};
+class Page :public Object
+{
+	char* PageTitle;
+	Post** Timeline;
+public:
+	Page(char* id, char* title) :Object(id)//Parameterized constructor
+	{
+		PageTitle = new char[strlen(title) + 1];
+		strcpy(PageTitle, title);
+		Timeline = nullptr;
+	}
+	~Page()//destructor for page objects
+	{
+		if (PageTitle)
+		{
+			delete[]PageTitle;
+		}
+		if (Timeline)
+		{
+			for (int i = 0; i < 10; i++)
+			{
+				delete[]Timeline[i];
+			}
+			delete[]Timeline;
+		}
+	}
+	Page()//default constructor
+	{
+		PageTitle = nullptr;
+		Timeline = nullptr;
+	}
+	void SetPageTitle(char* str)//for setting title of page
+	{
+		PageTitle = new char[strlen(str) + 1];
+		strcpy(PageTitle, str);
+	}
+	char* GetUserName()
+	{
+		return PageTitle;
+	}
+	void AllocateTimeline()
+	{
+		Timeline = new Post * [10];
+		for (int i = 0; i < 10; i++)
+		{
+			Timeline[i] = nullptr;
+		}
+	}
+	void AddPostToTimeline(Post* post)
+	{
+		if (Timeline != nullptr)
+		{
+			int i = 0;
+			while (Timeline[i] != nullptr && i < 10)
+			{
+				i++;
+			}
+			Timeline[i] = post;
+
+		}
+		else
+		{
+			AllocateTimeline();
+			Timeline[0] = post;
+		}
+	}
+	void PrintPosts()
+	{
+		if (Timeline)
+		{
+			for (int i = 0; i < 10; i++)
+			{
+				if (Timeline[i])
+				{
+					Timeline[i]->PrintPost();
+				}
+			}
+		}
+	}
+	void PrintPostsWithin24Hours(Date CurrentDate)
+	{
+		Date PreviousDate = CurrentDate.GetPreviousDate();
+		if (Timeline)
+		{
+			for (int i = 0; i < 10; i++)
+			{
+				for (int j = 0; j < 10; j++)
+				{
+					if (Timeline[i])
+					{
+						if (Timeline[i][j].GetPostedDate() == CurrentDate || Timeline[i][j].GetPostedDate() == PreviousDate)
+						{
+							Timeline[i][j].PrintPost();
+						}
+					}
+				}
+			}
+		}
+	}
+};
+
+
+class User :public Object
+{
+	Page** LikedPages;
+	User** FriendsList;
+	Post** Timeline;
+	char* FirstName;
+	char* LastName;
+public:
+	User()//default constuctor
+	{
+		FirstName = nullptr;
+		LastName = nullptr;
+		LikedPages = nullptr;
+		FriendsList = nullptr;
+		Timeline = nullptr;
+	}
+	/*void operator=(const User& other)
+	{
+		this->SetID(other.GetID());
+		FirstName = new char[strlen(other.FirstName) + 1];
+		strcpy(FirstName, other.FirstName);
+		LastName = new char[strlen(other.LastName) + 1];
+		strcpy(LastName, other.LastName);
+		if (other.FriendsList)
+		{
+			for (int i = 0; i < 20; i++)
+			{
+				if (other.FriendsList[i] != nullptr)
+				{
+					FriendsList[i] = other.FriendsList[i];
+				}
+			}
+		}
+		if (other.LikedPages)
+		{
+			for (int i = 0; i < 20; i++)
+			{
+				if (other.LikedPages)
+				{
+					LikedPages[i] = other.LikedPages[i];
+				}
+			}
+		}
+	}*/
+	~User()//destructor of User
+	{
+		if (LikedPages)
+		{
+			delete[]LikedPages;
+		}
+		if (FriendsList)
+		{
+			delete[]FriendsList;
+		}
+		if (FirstName)
+		{
+			delete[]FirstName;
+
+		}if (LastName)
+		{
+			delete[]LastName;
+
+		}
+		if (Timeline)
+		{
+			for (int i = 0; i < 10; i++)
+			{
+				delete Timeline[i];
+			}
+			delete[]Timeline;
+		}
+	}
+	void SetFirstName(char* str)//setting first Name
+	{
+		FirstName = new char[strlen(str) + 1];
+		strcpy(FirstName, str);
+	}
+	void SetLastName(char* str)//for setting last name of users
+	{
+		LastName = new char[strlen(str) + 1];
+		strcpy(LastName, str);
+	}
+	char* GetFirstName()
+	{
+		return FirstName;
+	}
+	char* GetLastName()
+	{
+		return LastName;
+	}
+	char* GetUserName()
+	{
+		char* UserName;
+		UserName = new char[strlen(FirstName) + strlen(LastName) + 2];
+		strcpy(UserName, FirstName);
+		UserName[strlen(FirstName)]=' ';
+		UserName[strlen(FirstName)+1] = '\0';
+		strcat(UserName, LastName);
+		return UserName;
+	}
+	void AllocateFriendsList()//for allocating friends list on heap
+	{
+		FriendsList = new User * [20];
+		for (int i = 0; i < 20; i++)
+		{
+			FriendsList[i] = nullptr;
+		}
+	}
+	void AllocatePages()//allocating liked pages on heap
+	{
+		LikedPages = new Page * [20];
+		for (int i = 0; i < 20; i++)
+		{
+			LikedPages[i] = nullptr;
+		}
+	}
+	void AddFriend(User* name)
+	{
+		//AllocateFriendsList();
+		if (FriendsList != nullptr)
+		{
+			int i = 0;
+			while (FriendsList[i] != nullptr && i < 20)
+			{
+				i++;
+			}
+			FriendsList[i] = name;
+		}
+		else
+		{
+			AllocateFriendsList();
+			FriendsList[0] = name;
+		}
+	}
+	void LikePage(Page* page)
+	{
+		if (LikedPages != nullptr)
+		{
+			int i = 0;
+			while (LikedPages[i] != nullptr && i < 20)
+			{
+				i++;
+			}
+			LikedPages[i] = page;
+			//	cout << "allocated succesfully" << page->GetID() << "to" << GetID()<<endl;
+		}
+		else
+		{
+			AllocatePages();
+			LikedPages[0] = page;
+			//		cout << "allocated succesfully" << page->GetID() << "to" << GetID()<<endl;
+		}
+	}
+	void AllocateTimeline()
+	{
+		Timeline = new Post * [10];
+		for (int i = 0; i < 10; i++)
+		{
+			Timeline[i] = nullptr;
+		}
+	}
+	void AddPostToTimeline(Post* post)
+	{
+		if (Timeline != nullptr)
+		{
+			int i = 0;
+			while (Timeline[i] != nullptr && i < 10)
+			{
+				i++;
+			}
+			Timeline[i] = post;
+			
+		}
+		else
+		{
+			AllocateTimeline();
+			Timeline[0] = post;
+		}
+	}
+	void ViewTimeline()
+	{
+		if (Timeline)
+		{
+			for (int i = 0; i < 10; i++)
+			{
+				if (Timeline[i] != nullptr)
+				{
+					Timeline[i]->PrintPost();
+					cout << endl;
+				}
+			}
+		}
+	}
+	void PrintPostsWithin24Hours(Date CurrentDate)
+	{
+		Date PreviousDate=CurrentDate.GetPreviousDate();
+		if (Timeline)
+		{
+			for (int i = 0; i < 10; i++)
+			{
+				for (int j = 0; j < 10; j++)
+				{
+					if (Timeline[i])
+					{
+						if (Timeline[i][j].GetPostedDate() == CurrentDate || Timeline[i][j].GetPostedDate() == PreviousDate)
+						{
+							Timeline[i][j].PrintPost();
+						}
+					}
+				}
+			}
+		}
+	}
+	void PrintHome(Date CurrentDate)
+	{
+		if (FriendsList)
+		{
+			for (int i = 0; i < 20; i++)
+			{
+				if (FriendsList[i])
+				{
+					FriendsList[i]->PrintPostsWithin24Hours(CurrentDate);
+				}
+			}
+		}
+		if (LikedPages)
+		{
+			for (int i = 0; i < 20; i++)
+			{
+				if (LikedPages[i])
+				{
+					LikedPages[i]->PrintPostsWithin24Hours(CurrentDate);
+				}
+			}
+		}
+	}
+	void VeiwFriendsList()
+	{
+		for (int i = 0; i < 20; i++)
+		{
+			if (FriendsList[i])
+			{
+				cout<<FriendsList[i]->GetUserName()<<endl;
+			}
+			//cout << endl;
+		}
+	}
+	void ViewLikedPages()
+	{
+		for (int i = 0; i < 20; i++)
+		{
+			if (LikedPages[i])
+			{
+				cout<<LikedPages[i]->GetUserName()<<endl;
+			}
+			//cout << endl;
+		}
+	}
+//	void PostComment()
+};
+//set timeline for both user and page
+
+class SocialNetwork
+{
+	static Post** Posts;
+	static Page** Pages;
+	static int NumberOfPages;
+	static User** Users;
+	static int NumberOfUsers;
+	static User* CurrentUser;
+	static int NumberOfPosts;
+	static int NumberOfComments;
+	static Comment** Comments;
+	static Date CurrentDate;
+public:
+	SocialNetwork()//default constructor
+	{
+		CurrentUser = nullptr;
+		Posts = nullptr;
+		Pages = nullptr;
+		Users = nullptr;
+		NumberOfPages = 0;
+		NumberOfUsers = 0;
+		NumberOfPosts = 0;
+		NumberOfComments = 0;
+		Comments = nullptr;
+	}
+	~SocialNetwork()
+	{
+		delete CurrentUser;
+		CurrentUser = nullptr;
+		for (int i = 0; i < NumberOfComments; i++)
+		{
+			delete Comments[i];
+		}
+		delete[]Comments;
+		for (int i = 0; i < NumberOfPages; i++)
+		{
+			delete Pages[i];
+		}
+		delete[]Pages;
+		for (int i = 0;i < NumberOfPosts; i++)
+		{
+			delete Posts[i];
+		}
+		delete []Posts;
+		for (int i = 0; i < NumberOfUsers; i++)
+		{
+			delete Users[i];
+		}
+		delete[] Users;
+	}
+	static void SetCurrentUser(const char* User)
+	{
+		if (Users)
+		{
+			for (int i = 0; i < NumberOfUsers; i++)
+			{
+				if (Users[i])
+				{
+					if (strcmp(Users[i]->GetID(),User)==0)
+					{
+						CurrentUser = Users[i];
+					}
+				}
+			}
+		}
+	}
+	static void SetCurrentDate(int Day, int Month, int Year)
+	{
+		CurrentDate.SetDate(Day, Month, Year);
+	}
+	void ViewHomeOfCurrentUser()
+	{
+		CurrentUser->PrintHome(CurrentDate);
+	}
+	/*static void Search(const char* Keyword)
+	{
+		for (int i = 0; i < NumberOfComments; i++)
+		{
+			cout << strstr(Comments[i]->GetText(), Keyword);
+			cout<< strstr(Comments[i]->GetID(), Keyword);
+			cout<<strstr(Comments[i]->GetPostID(), Keyword);
+		}
+	}*/
+	static void ViewLikedList(const char* PostID)
+	{
+		bool flag = false;
+		for (int i = 0; i < NumberOfPosts; i++)
+		{
+			if (Posts[i])
+			{
+				if (strcmp(PostID, Posts[i]->GetID()) == 0)
+				{
+					Posts[i]->ViewLikedBy();
+					flag = true;
+					break;
+				}
+			}
+		}
+		if (flag == false)
+		{
+			cout << "No one has liked this post" << endl;
+		}
+	}
+	static void PostComment(const char* postid,const char* CommentText)
+	{
+		bool flag = false;
+		Comment* aComment;
+		aComment = new Comment();
+		int j = 0;
+		for (j = 0; j < NumberOfComments; j++)
+		{
+			if (Comments[j])
+			{
+				j++;
+			}
+		}
+		char Index = j/10 + 48;
+		char Index2 = j % 10 + 48;
+		char* Username;
+		Username = new char[4];
+		strcpy(Username, "c");
+		Username[1] = Index;
+		Username[2] = Index2;
+		Username[3] = '\0';
+		aComment->SetPostID(postid);
+		aComment->SetText(CommentText);
+		aComment->SetID(Username);
+		for (int i = 0; i < NumberOfPosts; i++)
+		{
+			if (strcmp(postid, Posts[i]->GetID()) == 0)
+			{
+				aComment->SetPostedBy(Posts[i]->GetSharedBy());
+				Posts[i]->AddComment(aComment);
+				flag = true;
+				break;
+			}
+		}
+		if (flag==false)
+		{
+			cout << "comment can't be posted" << endl;
+		}
+	}
+	static void SharePost(const char* postid)
+	{
+		Post* aPost=nullptr;
+		aPost = new Post();
+		bool found = false;
+		int i = 0;
+		for (i=0; i < NumberOfPosts; i++)
+		{
+			if (strcmp(postid, Posts[i]->GetID()) == 0)
+			{
+				aPost->SetID(Posts[i]->GetID());
+				aPost->SetPostedDate(SocialNetwork::CurrentDate);
+				aPost->SetSharedBy(CurrentUser);
+				aPost->SetTextOfPost(Posts[i]->getTextOfPost());
+				aPost->SetActivity(Posts[i]->GetActivity());
+				CurrentUser->AddPostToTimeline(aPost);
+				found = true;
+				break;
+			}
+		}
+		if(found==false)
+		{
+			cout << "post can't be shared" << endl;
+		}
+	}
+	static void LikePost(const char* postid)
+	{
+		bool found = false;
+		for (int i = 0; i < NumberOfPosts; i++)
+		{
+			if (strcmp(postid, Posts[i]->GetID()) == 0)
+			{
+				Posts[i]->LikePost(CurrentUser);
+				found = true;
+			}
+		}
+		if (found==false)
+		{
+			cout << "post can't be liked" << endl;
+		}
+	}
+	static void PrintPost(const char* Id)
+	{
+		bool found = false;
+		for (int i = 0; i < NumberOfPosts; i++)
+		{
+			if (Posts[i])
+			{
+				if (strcmp(Posts[i]->GetID(), Id) == 0)
+				{
+					Posts[i]->PrintPost();
+					cout << endl;
+					found = true;
+					break;
+				}
+			}
+		}
+		if (found == false)
+		{
+			cout << "post can't be liked" << endl;
+		}
+	}
+	static void ViewPage(const char* PAGE)
+	{
+		bool found = false;
+		for (int i = 0; i < NumberOfPages; i++)
+		{
+			if (Pages[i])
+			{
+				if (strcmp(Pages[i]->GetID(), PAGE) == 0)
+				{
+					Pages[i]->PrintPosts();
+					found = true;
+					break;
+				}
+			}
+
+		}
+		if (found == false)
+		{
+			cout << "page not found" << endl;
+		}
+	}
+	static void Run()//loading data of pages and users from their respective files
+	{
+		ifstream fin;//reading data for page
+		fin.open("D:\\summer2019\\Pages1.txt");
+		if (!fin.is_open())
+		{
+			cout << "Error loading file" << endl;
+		}
+		else
+		{
+			int temp;
+			fin >> temp;
+			NumberOfPages = temp;
+			static char buffer[45];
+			SocialNetwork::Pages = new Page * [NumberOfPages];
+			for (int i = 0; i < NumberOfPages; i++)
+			{
+				Pages[i] = new Page;
+				fin >> buffer;
+				SocialNetwork::Pages[i]->SetID(Helper::GetStrFromBuffer(buffer));
+				fin.ignore(1);
+				fin.getline(buffer, 45);
+				SocialNetwork::Pages[i]->SetPageTitle(Helper::GetStrFromBuffer(buffer));
+			}
+			fin.close();
+		}
+		ifstream file;//reading data of users
+		file.open("D:\\summer2019\\Users1.txt");
+		int FriendsArray[20][20];
+		for (int i = 0; i < 20; i++) {
+			for (int j = 0; j < 20; j++) {
+				FriendsArray[i][j] = -1;
+			}
+		}
+		int PagesArray[20][20];
+		for (int i = 0; i < 20; i++)
+		{
+			for (int j = 0; j < 20; j++) {
+				PagesArray[i][j] = -1;
+			}
+
+		}
+		if (!file.is_open())
+		{
+			cout << "error loading file" << endl;
+		}
+		else
+		{
+			int temp;
+			file >> temp;
+			NumberOfUsers = temp;
+			char buff[30];
+			Users = new User * [NumberOfUsers];
+			for (int i = 0; i < NumberOfUsers; i++)
+			{
+				Users[i] = new User();
+				file >> buff;
+				SocialNetwork::Users[i]->SetID(Helper::GetStrFromBuffer(buff));
+				file >> buff;
+				SocialNetwork::Users[i]->SetFirstName(Helper::GetStrFromBuffer(buff));
+				file >> buff;
+				SocialNetwork::Users[i]->SetLastName(Helper::GetStrFromBuffer(buff));
+				file >> buff;
+				int k = 0;
+				if (buff[0] != '-')
+				{
+					Users[i]->AllocateFriendsList();
+				}
+				while (buff[0] != '-')
+				{
+					int integer = Helper::myatoi(buff);
+					FriendsArray[i][k] = integer;
+					file >> buff;
+					++k;
+				}
+				file >> buff;
+				int p = 0;
+				while (buff[0] != '-' && p < 20)//..................................................
+				{
+					PagesArray[i][p] = Helper::myatoi(buff);
+
+					file >> buff;
+					++p;
+				}
+			}
+			for (int i = 0; i < NumberOfUsers; i++)//assigning friends
+			{
+				int j = 0; int size = 0;
+				while (FriendsArray[i][j] != -1)
+				{
+					char* index;
+					char* UserName;
+					if (FriendsArray[i][j] < 10)
+					{
+						index = new char[2];
+						UserName = new char[3];
+						size = 2;
+						UserName[0] = 'u';
+						UserName[1] = FriendsArray[i][j] + 48;
+						UserName[2] = '\0';
+					}
+					else
+					{
+						index = new char[3];
+						UserName = new char[4];
+						size = 3;
+						UserName[0] = 'u';
+						UserName[1] = (FriendsArray[i][j] / 10) + 48;
+						UserName[2] = (FriendsArray[i][j] % 10) + 48;
+						UserName[3] = '\0';
+					}
+					for (int m = 0; m < NumberOfUsers; m++)
+					{
+						if (strcmp(Users[m]->GetID(), UserName) == 0)
+						{
+							Users[i]->AddFriend(Users[m]);
+							break;
+						}
+					}
+					j++;
+				}
+			}
+			//now assigning pages
+			for (int i = 0; i < NumberOfUsers; i++)
+			{
+				int j = 0;
+				while (PagesArray[i][j] != -1)
+				{
+					char* index;
+					char* UserName;
+					int size = 0;
+					if (PagesArray[i][j] < 10)
+					{
+						index = new char[2];
+						UserName = new char[3];
+						size = 2;
+						UserName[0] = 'p';
+						UserName[1] = PagesArray[i][j] + 48;
+						UserName[2] = '\0';
+					}
+					else
+					{
+						index = new char[3];
+						UserName = new char[4];
+						size = 3;
+						UserName[0] = 'p';
+						UserName[1] = (PagesArray[i][j] / 10) + 48;
+						UserName[2] = (PagesArray[i][j] % 10) + 48;
+						UserName[3] = '\0';
+					}
+					int m = 0;
+					for (m = 0; m < NumberOfUsers; m++)
+					{
+
+						if (strcmp(Pages[m]->GetID(), UserName) == 0)
+						{
+							Users[i]->LikePage(Pages[m]);
+							break;
+						}
+
+					}
+					j++;
+				}
+			}
+		}
+		ifstream in;
+		in.open("D:\\summer2019\\Posts.txt");
+		if (!in.is_open())
+		{
+			cout << "error loading file" << endl;
+		}
+		else
+		{
+			int temp;
+			int temp1;
+			int temp2;
+			int temp3;
+			in >> temp;
+			NumberOfPosts = temp;
+			static char buffer[75];
+			SocialNetwork::Posts = new Post * [NumberOfPosts];
+			for (int i = 0; i < NumberOfPosts; i++)
+			{
+				Posts[i] = new Post;
+				in >> buffer;
+				SocialNetwork::Posts[i]->SetID(Helper::GetStrFromBuffer(buffer));
+				in >> temp1;
+				in >> temp2;
+				in >> temp3;
+				//in >> buffer;
+				//cout << temp1 << temp2 << temp3;
+				SocialNetwork::Posts[i]->SetPostedDate(temp1, temp2, temp3);
+				in.ignore(1);
+				in.getline(buffer, 75);
+				SocialNetwork::Posts[i]->SetTextOfPost(Helper::GetStrFromBuffer(buffer));
+				in >> temp;
+				if (temp != 0)
+				{
+					in.getline(buffer, 75);
+					SocialNetwork::Posts[i]->SetActivity(temp, Helper::GetStrFromBuffer(buffer));
+				}
+				in >> buffer;
+				for (int j = 0; j < NumberOfUsers; j++)
+				{
+					if (strcmp(Helper::GetStrFromBuffer(buffer), Users[j]->GetID()) == 0)
+					{
+						SocialNetwork::Posts[i]->SetSharedBy(Users[j]);
+						break;
+					}
+				}
+				for (int j = 0; j < NumberOfPages; j++)
+				{
+					if (strcmp(Helper::GetStrFromBuffer(buffer), Pages[j]->GetID()) == 0)
+					{
+						SocialNetwork::Posts[i]->SetSharedBy(Pages[j]);
+						break;
+					}
+				}
+				in >> buffer;
+				if (buffer[0] != '-')
+				{
+					while (buffer[0] != '-')
+					{
+						for (int j = 0; j < NumberOfUsers; j++)
+						{
+							if (strcmp(Helper::GetStrFromBuffer(buffer), Users[j]->GetID()) == 0)
+							{
+								SocialNetwork::Posts[i]->LikePost(Users[j]);//hjejhhvgehfghbdcbdfhdfsjbkhshkhfkhf
+								break;
+							}
+						}
+						for (int j = 0; j < NumberOfPages; j++)
+						{
+							if (strcmp(Helper::GetStrFromBuffer(buffer), Pages[j]->GetID()) == 0)
+							{
+								SocialNetwork::Posts[i]->LikePost(Pages[j]);
+								break;
+							}
+						}
+						in >> buffer;
+					}
+				}
+			}
+		}
+		ifstream insert;
+		insert.open("D:\\summer2019\\Comments.txt");
+		if (!insert.is_open())
+		{
+			cout << "error loading file" << endl;
+		}
+		else
+		{
+			int temp;
+			insert >> temp;
+			SocialNetwork::NumberOfComments = temp;
+			SocialNetwork::Comments = new Comment * [NumberOfComments];
+			char buff[60];
+			char* Username;
+			int size;
+			for (int i = 0; i < NumberOfComments; i++)
+			{
+				Comments[i] = new Comment;
+				insert >> buff;
+				Comments[i]->SetID(Helper::GetStrFromBuffer(buff));
+			//	insert.ignore(1);
+			//	cout << Helper::GetStrFromBuffer(buff)<<endl;
+				insert >> buff;
+				Comments[i]->SetPostID(Helper::GetStrFromBuffer(buff));
+			//	cout << Helper::GetStrFromBuffer(buff) << endl;
+			//	insert.ignore(1);
+				insert >> buff;
+				size = strlen(Helper::GetStrFromBuffer(buff));
+				Username = new char[size];
+				strcpy(Username, Helper::GetStrFromBuffer(buff));
+			//	cout << Helper::GetStrFromBuffer(buff) << endl;
+				for (int j= 0; j < NumberOfUsers;j++)
+				{
+					if (strcmp(Username,Users[j]->GetID())==0)
+					{
+						Comments[i]->SetPostedBy(Users[j]);
+						break;
+					}
+				}
+				for (int j = 0; j < NumberOfPages; j++)
+				{
+					if (strcmp(Username, Pages[i]->GetID())==0)
+					{
+						Comments[i]->SetPostedBy(Pages[j]);
+						break;
+					}
+				}
+				insert.ignore(1);
+				insert.getline(buff,60);
+				Comments[i]->SetText(Helper::GetStrFromBuffer(buff));
+			//	cout << Helper::GetStrFromBuffer(buff) << endl;
+
+			}
+		}
+		//assigning comments to their respective posts
+		for (int i = 0; i < NumberOfComments; i++)
+		{
+			for (int j = 0; j < NumberOfPosts; j++)
+			{
+				if (strcmp(Comments[i]->GetPostID(),Posts[j]->GetID()) == 0)
+				{
+					Posts[j]->AddComment(Comments[i]);
+				}
+			}
+		}
+		//assigning posts to timeline
+		//assigning posts of users
+		for (int i = 0; i < NumberOfUsers; i++)
+		{
+			if (Users[i])
+			{
+				for (int j = 0; j < NumberOfPosts; j++)
+				{
+					if (Posts[j])
+					{
+						if (strcmp(Users[i]->GetID(), Posts[j]->GetObjectName()) == 0)
+						{
+							Users[i]->AddPostToTimeline(Posts[j]);
+							break;
+						}
+					}
+				}
+			}
+		}
+		//assigning posts to pages
+		for (int i = 0; i < NumberOfPages; i++)
+		{
+			if (Pages[i])
+			{
+				for (int j = 0; j < NumberOfPosts; j++)
+				{
+					if (Posts[j])
+					{
+						if (strcmp(Pages[i]->GetID(), Posts[j]->GetObjectName()) == 0)
+						{
+							Pages[i]->AddPostToTimeline(Posts[j]);
+							break;
+						}
+					}
+				}
+			}
+		}
+		cout << "Command: Set Current Date "<< endl;
+		SocialNetwork::SetCurrentDate(15,11,2017);
+		cout << "Command: Set Current user u7 " << endl;
+		SocialNetwork::SetCurrentUser("u7");
+		cout << "Command: View Friends list " << endl;
+		CurrentUser->VeiwFriendsList();
+		cout << "Command: View Liked Pages " << endl;
+		CurrentUser->ViewLikedPages();
+		cout << "Command: View Home page" << endl;
+		CurrentUser->PrintHome(CurrentDate);
+		cout << "Command: View Timeline " << endl;
+		CurrentUser->ViewTimeline();
+		cout << "Command: View Post is liked by" << endl;
+		SocialNetwork::ViewLikedList("post5");
+		cout << "Command: liking post" << endl;
+		SocialNetwork::LikePost("post5");
+		cout << "Viewing liked Post" << endl;
+		SocialNetwork::ViewLikedList("post5");
+		cout << "Viewing Timeline" << endl;
+		CurrentUser->ViewTimeline();
+		cout << "Printing post" << endl;
+		SocialNetwork::PrintPost("post4");
+		cout << "Posting comment" << endl;
+		SocialNetwork::PostComment("post4", "Thanks for the wishes");
+		cout << "Printing post in which comment is added" << endl;
+		SocialNetwork::PrintPost("post4");
+		cout << "Sharing post" << endl;
+		SocialNetwork::SharePost("post5");
+		cout << "Viewing Timeline" << endl;
+		CurrentUser->ViewTimeline();
+		cout << "Viewing page" << endl;
+		SocialNetwork::ViewPage("p1");
+		/*cout << "Searching for keyword" << endl;
+		SocialNetwork::Search("1");*/
+	}
+	
+
+};
+int SocialNetwork::NumberOfPages = 0;
+Page** SocialNetwork::Pages = nullptr;
+User** SocialNetwork::Users = nullptr;
+Post** SocialNetwork::Posts = nullptr;
+Comment** SocialNetwork::Comments = nullptr;
+User* SocialNetwork::CurrentUser = nullptr;
+int SocialNetwork::NumberOfUsers = 0;
+int SocialNetwork::NumberOfPosts = 0;
+int SocialNetwork::NumberOfComments = 0;
+Date SocialNetwork::CurrentDate;
+int main()
+{
+	SocialNetwork::Run();
+	system("pause");
+	return 0;
+}
